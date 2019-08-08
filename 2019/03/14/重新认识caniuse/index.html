@@ -5,19 +5,23 @@
   
 
   
-  <title>Web前端</title>
+  <title>重新认识caniuse | Web前端</title>
   <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
-  <meta name="description" content="前端 石坚 博客">
+  <meta name="description" content="困惑相信大家都曾用caniuse网站查询过css、js的一些兼容性问题，并且都从它反馈的兼容性数据中获益，让我们的线上项目更加稳定、和谐的跑在用户电脑里。不过对于caniuse页面上的一些细节，我们可能会感到困惑或者模棱两可，今天就带着大家一起来重新认识caniuse这个网站，并对它的原理和细节做些探究。 1.1从babel-preset-env说起babel-preset-env是babel6中">
 <meta name="keywords" content="cc">
-<meta property="og:type" content="website">
-<meta property="og:title" content="Web前端">
-<meta property="og:url" content="http://yoursite.com/index.html">
+<meta property="og:type" content="article">
+<meta property="og:title" content="重新认识caniuse">
+<meta property="og:url" content="http://yoursite.com/2019/03/14/重新认识caniuse/index.html">
 <meta property="og:site_name" content="Web前端">
-<meta property="og:description" content="前端 石坚 博客">
+<meta property="og:description" content="困惑相信大家都曾用caniuse网站查询过css、js的一些兼容性问题，并且都从它反馈的兼容性数据中获益，让我们的线上项目更加稳定、和谐的跑在用户电脑里。不过对于caniuse页面上的一些细节，我们可能会感到困惑或者模棱两可，今天就带着大家一起来重新认识caniuse这个网站，并对它的原理和细节做些探究。 1.1从babel-preset-env说起babel-preset-env是babel6中">
 <meta property="og:locale" content="CN">
+<meta property="og:image" content="https://user-gold-cdn.xitu.io/2019/3/14/1697b7de9cae5730?w=800&h=249&f=png&s=152635">
+<meta property="og:image" content="https://user-gold-cdn.xitu.io/2019/3/14/1697b8667372ca19?w=645&h=268&f=png&s=117036">
+<meta property="og:updated_time" content="2019-08-08T12:20:25.000Z">
 <meta name="twitter:card" content="summary">
-<meta name="twitter:title" content="Web前端">
-<meta name="twitter:description" content="前端 石坚 博客">
+<meta name="twitter:title" content="重新认识caniuse">
+<meta name="twitter:description" content="困惑相信大家都曾用caniuse网站查询过css、js的一些兼容性问题，并且都从它反馈的兼容性数据中获益，让我们的线上项目更加稳定、和谐的跑在用户电脑里。不过对于caniuse页面上的一些细节，我们可能会感到困惑或者模棱两可，今天就带着大家一起来重新认识caniuse这个网站，并对它的原理和细节做些探究。 1.1从babel-preset-env说起babel-preset-env是babel6中">
+<meta name="twitter:image" content="https://user-gold-cdn.xitu.io/2019/3/14/1697b7de9cae5730?w=800&h=249&f=png&s=152635">
   
     <link rel="alternate" href="/atom.xml" title="Web前端" type="application/atom+xml">
   
@@ -68,72 +72,7 @@
   </div>
 </header>
       <div class="outer">
-        <section id="main">
-  
-    <article id="post-rrweb" class="article article-type-post" itemscope itemprop="blogPost">
-  <div class="article-meta">
-    <a href="/2019/08/07/rrweb/" class="article-date">
-  <time datetime="2019-08-07T14:11:37.000Z" itemprop="datePublished">2019-08-07</time>
-</a>
-    
-  </div>
-  <div class="article-inner">
-    
-    
-      <header class="article-header">
-        
-  
-    <h1 itemprop="name">
-      <a class="article-title" href="/2019/08/07/rrweb/">基于rrweb录屏与重放页面</a>
-    </h1>
-  
-
-      </header>
-    
-    <div class="article-entry" itemprop="articleBody">
-      
-        <h2 id="项目背景"><a href="#项目背景" class="headerlink" title="项目背景"></a>项目背景</h2><p>在使用ant design文档的过程中发现，antd使用了一个叫做logRocket的录屏框架，于是立马将logRocket用在自己的项目当中，测试它的功能。</p>
-<p>logRocket网站将采集到的数据，按照人员和session进行分类，观看各人员的操作回放，可以发现系统中某些操作的不便之处，并且可以发现哪些人员是你的重度用户。</p>
-<p>但是logRocket的数据存储在他们的服务器，并且从logRocket回放里，能看到系统中的各种重要数据。如果数据被别有用心之人获取，后果将很严重。</p>
-<h2 id="rrweb"><a href="#rrweb" class="headerlink" title="rrweb"></a>rrweb</h2><p>如果我们需要基于一个开源框架，并将数据存在自己的服务器中，限制人员查看的权限，这样就尅消除之前的隐患。</p>
-<p>下面我要介绍的就是今天的主角<a href="https://github.com/rrweb-io/rrweb" target="_blank" rel="noopener">rrweb</a>框架，全称record and replay the web。它由三个库组成：</p>
-<p>rrweb-snapshot，将页面中的dom转化为可序列化的数据结构<br>rrweb，提供录屏和重放的api<br>rrweb-player，提供播放的ui页面，支持快进、全屏、拖拽等操作<br>每次刷新页面时，rrweb会将页面中的dom元素全部转换成文档数据，并给每个dom元素分配一个唯一id。后面当页面发生变化时，只对变化的dom元素进行序列化。当重放页面时，会将数据反序列化并插入到页面中，而原先增量的dom变化，如属性或者文本变化，则根据id找到对应dom元素修改；而子节点的增加或减少，根据父元素id进行dom变更。</p>
-<h2 id="开发历程"><a href="#开发历程" class="headerlink" title="开发历程"></a>开发历程</h2><p>1.直接使用rrweb记录每次的序列化录屏数据，首先保存到localStorage中，当数据量超过阈值或者超过时间限制，再由sendbeacon发送数据到node，并保存到mongo中。</p>
-<p>2.首先遇到的问题是sendbeacon发送数据居然出现了丢失，原因是数据超过65536时，将会发送失败，由于sendbeacon是由后台进程单独发送，无法获取失败状态，所以要进行降级处理，当数据过大时，使用fetch请求发送。</p>
-<p>3.由于公司中后台系统的用户分布在世界各地，海外的网络延迟较高，需要解决压缩数据大小的问题，这里使用的是lz-string库。一开始想要在每次存储在localStorage时进行压缩，后来发现压缩后的数据有特殊字符，JSON.parse高频率出错，后改为在每次发送数据到后端之前压缩，并在node端进行解压。</p>
-<p>4.一开始的数据库选型为时序数据库influxdb，由于某些不可抗拒原因改为了mongodb。</p>
-<p>5.在项目上线后选择了一个小项目进行测试，发现存储和播放效果良好，代码如下</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line">import rrweb from &apos;rrweb&apos;;</span><br><span class="line"></span><br><span class="line">rrweb.record(&#123;</span><br><span class="line">  emit(event) &#123;</span><br><span class="line">    storagePush(event);</span><br><span class="line">  &#125;,</span><br><span class="line">&#125;);</span><br></pre></td></tr></table></figure>
-
-<p>存进数据库中的数据结构为</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">&#123;</span><br><span class="line">timestamp: 1563418490795,</span><br><span class="line">name:&apos;小明&apos;,</span><br><span class="line">event:...</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-
-<p>方便按照用户和时间范围进行查找数据，内容如下<br><img src="https://user-gold-cdn.xitu.io/2019/7/19/16c0aa2c6390717b?w=800&h=338&f=png&s=59998" alt><br>6.但是每次都要播放一整天的数据，第一播放接口获取的数据量巨大，第二播放时间漫长，抓不住重点，一旦数据有误导致后续录屏都播放不了。</p>
-<p>查看rrweb源码发现checkoutEveryNms属性可以按照时间进行session切分，于是代码变成了这样</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line">rrweb.record(&#123;</span><br><span class="line">  emit(event, checkout) &#123;</span><br><span class="line">    if(checkout)rrwebSessionSet();</span><br><span class="line">    storagePush(event);</span><br><span class="line">  &#125;,</span><br><span class="line">  checkoutEveryNms: 1000 * 60 * 10</span><br><span class="line">&#125;);</span><br></pre></td></tr></table></figure>
-
-<p>每一次checkoutEveryNms到期时，emit里的第二个参数checkout都会为true，这样就可以知道新的session开始，给session分配一个唯一值，存到数据库中的数据结构改为这样</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line">&#123;</span><br><span class="line">timestamp: 1563418490795,</span><br><span class="line">name:&apos;小明&apos;,</span><br><span class="line">session:xxxxxxxxxxx,</span><br><span class="line">event:...</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-
-<p>有了session概念之后，某个人某一天的操作就可以按照session进行选择<br><img src="https://user-gold-cdn.xitu.io/2019/7/19/16c0aa43b272cbb1?w=800&h=420&f=png&s=128085" alt><br>播放页面如下</p>
-<p><img src="https://user-gold-cdn.xitu.io/2019/7/19/16c0aa49348cce6d?w=800&h=440&f=png&s=332913" alt><br>7.小项目测试完毕后，希望引入一个大项目进行测试，于是开放了一个uv上千、pv几十万的大项目，采集一天的数据后，发现存储数据正常，而播放页面已经获取不到数据，查看mongo的stats发现一天存储量达到了1500万条，每一条数据基本在几十KB到几M之间。</p>
-<p>首先对不同的项目进行分表存储，并将索引设置为后台处理，这个方案使用后播放页面变得正常，但人员列表接口还是很慢。</p>
-<p>于是在每次存储mongo时，存一份人员和日期的数据到redis中，目前系统已经正常运行，所有接口能在1s内返回所有数据。</p>
-
-      
-    </div>
-    <footer class="article-footer">
-      <a data-url="http://yoursite.com/2019/08/07/rrweb/" data-id="cjz2nnutn0000qws53eulu6x5" class="article-share-link">Share</a>
-      
-      
-    </footer>
-  </div>
-  
-</article>
-
-
-  
-    <article id="post-重新认识caniuse" class="article article-type-post" itemscope itemprop="blogPost">
+        <section id="main"><article id="post-重新认识caniuse" class="article article-type-post" itemscope itemprop="blogPost">
   <div class="article-meta">
     <a href="/2019/03/14/重新认识caniuse/" class="article-date">
   <time datetime="2019-03-14T12:19:28.000Z" itemprop="datePublished">2019-03-14</time>
@@ -146,8 +85,8 @@
       <header class="article-header">
         
   
-    <h1 itemprop="name">
-      <a class="article-title" href="/2019/03/14/重新认识caniuse/">重新认识caniuse</a>
+    <h1 class="article-title" itemprop="name">
+      重新认识caniuse
     </h1>
   
 
@@ -314,11 +253,23 @@
     </footer>
   </div>
   
-</article>
-
+    
+<nav id="article-nav">
+  
+    <a href="/2019/08/07/rrweb/" id="article-nav-newer" class="article-nav-link-wrap">
+      <strong class="article-nav-caption">Newer</strong>
+      <div class="article-nav-title">
+        
+          基于rrweb录屏与重放页面
+        
+      </div>
+    </a>
+  
+  
+</nav>
 
   
-
+</article>
 
 </section>
         

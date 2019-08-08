@@ -1,1 +1,0 @@
-/Users/jianshi/Desktop/myspace/blog/public/js
